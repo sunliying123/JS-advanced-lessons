@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title> 数据类型、值与变量</title>
+
+    <script>
+        //demo01.js
+        //类型检测 typeof一般用于值类型的检测
+        console.log(typeof 123);//number
+        console.log(typeof true);//boolean
+        console.log(typeof "abc");//string
+        console.log(typeof null);//Object
+        console.log(typeof undefined);//undefined
+        console.log(typeof {name:"Mike",age:20});//Object
+
+        console.log(typeof function foo(){});//function
+
+        //课外思考
+        console.log(typeof Array);//function
+        console.log(typeof Function);//function
+        console.log(typeof Date);//function
+        console.log(typeof Number);//function
+        console.log(typeof Math);//object
+        console.log(typeof JSON);//object
+
+        //类型检测 instanceof(左操作数为对象，右操作数为原型链中的一个类型时，返回true)
+        var a={name:"Mike",age:20};
+        console.log(a instanceof Object);//true
+
+        var b=[12,34,{},""];
+        console.log(b instanceof Array);//true
+
+        var Person=function(){
+
+        };
+        var p1=new Person();
+        console.log(p1 instanceof Person);//true
+    </script>
+    <script>
+        //demo02.js
+        //基本(原始)数据类型 与 引用(对象)类型的区别 内存分配方式不同
+        //内存的分配方式影响变量的生命周期
+        //函数局部变量中的值类型变量与引用类型变量
+
+        function foo(){
+            var n=10;
+            var m=true;
+            var str="Hello World";//str:"Hello World"存在栈中
+
+            //obj的引用存在栈中，{value:"Hello World"}存在堆中，通过栈中的变量名obj(访问地址)访问
+            var obj={value:"Hello World"};
+        };
+        foo();
+    </script>
+    <script>
+        //demo03.js
+        (function(){
+            //基本(原始)数据类型 与 引用(对象)类型的区别 
+            //赋值方式不同
+            var str_a='a';
+            var str_b=str_a;//原始类型直接访问值，是值赋值
+            str_b='b';//str_b的值为 "b",而str_a的值仍然是 "a"
+            console.log(str_a,str_b);//a,b
+
+            var obj_a={v:"a"};//obj_a存的是引用，引用堆内存中存的对象:{v:"a"};
+            var obj_b=obj_a;//obj_b存的也是引用，引用了堆内存的值{v:"a"};是引用赋值
+            obj_b.v="b";//通过obj_b访问(修改)堆内存的变量，这时候堆内存中对象值为：{v:"b"}
+            //由于obj_a和obj_b引用的是堆内存中同一个对象值，所以这时候打印都是{v:"b"}
+            console.log(obj_a,obj_b);//都是{v:"b"}
+
+            var_b={v:"c"};//注意：因为改的是整个对象，这里会在堆内存中创建一个新的对象值:{v:"c"},而现在的obj_b引用的是这个对象
+            console.log(obj_a,obj_b);//{v:"b"},{v:"c"}
+        }());
+
+
+        //注意：是值赋值还是引用赋值取决于变量的类型，而不取决于变量分配在堆区还是栈区
+        var obj_c={x1:2,y1:3};
+        var obj_d={x2:2,y2:3};
+
+        console.log(obj_c.x1===obj_d.x2);
+        console.log(obj_c===obj_d);
+
+        console.log({m:1}==={m:1});
+
+
+        //经典案例
+        //值不变
+        var a=123;
+        function foo1(x){//此时a已经有值。所以传入的是123
+            x=345;
+        }
+        foo1(a);
+        console.log(a);//123
+
+        //值改变
+        var a={y:123};
+        function foo2(x){
+            x.y=345;
+        }
+        foo2(a);
+        console.log(a.y);//345
+
+        //
+        var a={y:123};
+        function foo3(x){
+            x.y=345;
+            x={y:456};
+        }
+        foo3(a);
+        console.log(a.y);//345
+
+        //
+        var a={y:123};
+        function foo4(x){
+            x={y:456};
+            x.y=345;
+        }
+        foo4(a);
+        console.log(a.y);//123
+    </script>
+    <script>
+        //demo04
+        //立即执行函数
+        (function (){
+            var a1=100;
+            var b1=100;
+            console.log(a1==b1);//true
+            console.log(a1===b1);//true
+
+            //
+            var a2=new Number(200);
+            var b2=new Number(200);
+            console.log(a2);
+            console.log(b2);
+            console.log(a2==b2);//false
+            console.log(a2===b2);//false
+
+            //
+            var a3=new Number(200);
+            var b3=a3;
+            console.log(a3==b3);//true
+            console.log(a3===b3);//true
+            
+            b3=new Number(200);
+            console.log(a3===b3);//false
+
+            //
+            var a4=new Number(200);
+            var b4=200;
+            console.log(a4==b4);//true
+            console.log(a4===b4);//false
+
+            //
+            var a5={x:1,y:2};
+            var b5={x:1,y:2};
+            console.log(a5==b5);//false
+            console.log(a5===b5);//false
+            console.log(a5.x===b5.x);//true
+        }());
+    </script>
+    <script>
+        //demo05
+        (function(){
+            //基本数据类型与引用数据类型的区别  函数参数传递方式不同
+            //值传递
+            var str_a='Hello World';
+            function fn_a(arg){
+                console.log(arg);//1#  Hello World
+                arg='Hai';
+                console.log(str_a,arg);//2#  Hello World,Hai
+            };
+            fn_a(str_a);
+            console.log(str_a);//3#  这时候str_a:"Hello World"
+        }());
+        //1#可以看出，传入函数fn_a是str_a的值
+        //并且在内存中分配了新的空间来保存函数参数和其值(函数运行后自动释放这部分内存)
+        //2#处打印的是2个不同的字符串，也正是因为传值的时候对str_a的值进行了复制，而这又是原始类型的值
+        //所以在3#处的str_a与早先声明的str_a保持一致
+
+
+        //引用传递
+        var obj_a={value:1};
+        function fn_a(arg){
+            arg.value=3;
+        };
+        fn_a(obj_a);
+        console.log(obj_a);//obj_a={value:3}
+
+        function fn_b(arg){
+            arg={value:2};//创建了一个新的对象，arg指向新对象
+        };
+        fn_b(obj_a);
+        console.log(obj_a);//obj_a={value:3}
+        
+        //上面这个问题也可以从内存的角度去理解，两个函数都是传址，而在这个地址引用了obj_a在内存中对应的对象
+        //所以两个函数中的arg起初都是引用和obj_a同一个内存中的对象值
+        //而fn_a中访问的依旧是和obj_a同一个内存对象，所以fn_a的修改是成功的
+        //但是在fn_b中重新为arg赋值新的对象，arg指向新对象并不会影响obj_a
+    </script>
+    <script>
+        //demo06
+        var a1=20;
+        var a2=23.4;
+        console.log(parseInt(a2));//23，如果是非数字，则先转换为字符串，然后再转成整型
+        console.log(parseFloat('23.456xy'));//23.456
+        //注意：parseInt和parseFloat都为全局方法，即window全局对象的方法
+        console.log(parseInt===window.parseInt);//true
+        console.log(parseFloat===window.parseFloat);//true
+
+
+        var a2=23.4;
+        console.log(Math.ceil(a2));//24
+        console.log(Math.floor(a2));//23
+        console.log(Math.round(a2));//23
+        a3=5e2;//指数形式
+        console.log(a3);//500
+        console.log(typeof Math);//object
+
+        //NaN
+        var x=Number('xis021');//试着转成Number类型
+        console.log(x);//NaN
+        isNaN(x);//true
+        typeof NaN;//number
+
+
+        //Math.log()返回数的自然对数，底数为e
+        console.log(Math.log(-1));//NaN
+        //Math.acos()返回数的反余弦值
+        console.log(Math.acos(2));//NaN
+        console.log(NaN===NaN);//false
+
+        //Infinity与-Infinity
+        var y1=2/0;
+        console.log(y1);//Infinity
+        var y2=-2/0;
+        console.log(y2);//-Infinity
+        isFinite(y2);//false,非有限数
+        isFinite(23);//true,有限数
+
+        //0与-0
+        var z1=1/Infinity;
+        console.log(z1);//0
+        var z2=-1/Infinity;
+        console.log(z2);//-0
+    </script>
+    <script>
+        //demo07
+        //字面量
+        var str='abc_def_ghi_mn';
+        //转义字符 \n \" \' \\
+        console.log("abc\ndefghi\\\n\'mn\'");
+
+        //字符串常用操作
+        var str='abc_def_ghi_mn';
+        str.split("_");//['abc','def','ghi','mn']
+        str.split("_",2);//['abc','def]
+
+        str.concat("_opq");//"abc_def_ghi_mn_opq"字符串拼接
+
+        str.substr(4,7);//"def_ghi",字符串截取substr(起始位置，截取长度)
+        str.substring(4,7);//"def",字符串截取substring(起始位置，结束位置前一个下标)
+       
+        str.slice(2);//"c_def_ghi_mn"
+        str.slice(2,5);//"c_d"
+        str.slice(-2);//"mn"
+        str.slice(2,-2);//"c_def_ghi_"
+
+        str.bold();
+        str.link();
+        str.fontcolor("red");
+        str.fontsize(50);
+    </script>
+
+    <script>
+        //demo08
+        //Undefined的几种情况
+        var a;
+        console.log(a);//Undefined
+        //注意分清未定义与未声明的区别 undefined 与 undeclare
+
+        function foo(x,y){
+            console.log(x,y);//undefined
+        }
+        foo(1);
+
+        function fee(){
+            //没有返回值的情况
+        }
+        var feeReturnValue=fee();
+        console.log(feeReturnValue);//undefined
+
+        //null 需要注意一点
+        console.log(typeof null);//object
+    </script>
+
+    <script>
+        //demo09.js
+        //对象类型  简述
+        var obj = {x:1,y:2};//obj的原型是Object.prototype,并且obj继承的属性和方法都源于这个原型
+        console.log(obj.__proto__ === Object.prototype);//true
+        console.log(Object.prototype);
+
+        var arr = [1,2,3,4,5];//arr的原型是Array.prototype,并且arr继承的属性和方法都源于这个原型
+        console.log(arr.__proto__ === Array.prototype);//true
+        console.log(Array.prototype);
+        console.log(arr.__proto__.__proto__ === Object.prototype);//true
+
+        function foo(){
+            console.log('foo function!');
+        };
+        console.log(foo.__proto__ === Function.prototype);//true
+        console.log(foo.__proto__.__proto__ === Object.prototype);//true
+
+        console.log(obj instanceof Object);//true
+        console.log(arr instanceof Object);//true
+        console.log(foo instanceof Object);//true
+        console.log(foo === window.foo);//true
+
+        //ES5中查看属性相关的几种方法
+        for(var k in obj){//只能遍历整个原型链上所有可遍历的属性
+            console.log(k,obj[k]);
+        }
+        console.log(Object.keys(obj));//返回一个数组，包含自身所有可枚举的属性
+        console.log('x' in obj);//能够检查整个原型链上的属性，包括不可遍历的属性
+    </script>
+
+    <script>
+        //demo10.js
+        //包装对象
+        var a=123;
+        var b=new Number(a);
+
+        console.log(a==b);//true
+        console.log(a===b);//false,因为a=123是数值类型，而b是Object类型
+
+        //临时包装对象
+        var str='abcde';
+        console.log(str.length);//5,临时包装成String对象
+        str.length=1;
+        console.log(str.length,str);//5 'abcde'临时包装对象并不影响原始值
+
+        var arr=[1,2,3,4];
+        console.log(arr.length);//4
+        arr.length=1;
+        console.log(arr.length,arr);//1 [1]
+    </script>
+    <script>
+        //demo11
+        //Part1
+        console.log(Boolean(undefined));//false
+        console.log(Boolean(null));//false
+        console.log(Boolean(0));//false
+        console.log(Boolean(NaN));//false
+        console.log(Boolean(1));//true
+        console.log(Boolean(''));//false
+        console.log(Boolean('abc'));//true
+        console.log(Boolean({}));//true
+
+        if(new Boolean(false)){
+            console.log('执行');
+        }
+
+        //Part2
+        console.log(Number(undefined));//NaN
+        console.log(Number(null));//0
+        console.log(Number(true));//1
+        console.log(Number(false));//0
+        console.log(Number(""));//0
+        console.log(Number("abc"));//NaN
+        console.log(Number("123.345xx"));//NaN
+        console.log(Number("32343,345xx"));//NaN
+        console.log(Number({x:1,y:2}));//NaN
+
+        //Part3
+        console.log(String(undefined));//undefined
+        console.log(String(null));//null
+        console.log(String(true));//true
+        console.log(String(false));//false
+        console.log(String(0));//0
+        console.log(String(234));//234
+        console.log(String({x:1,y:2}));//Object,Object
+    </script>
+    <script>
+        //demo12
+        //比较运算符 与 隐式类型转换+-
+        var a=4;
+        var b=3;
+        console.log(typeof (a>b),a>b);//boolean,true
+        console.log(typeof(a==b),a==b);//boolean,false
+        console.log(typeof(a<b),a<b);//boolean,false
+
+        //算术运算符 与 隐式类型转换
+        var c='img'+3+'.jpg';
+        var d='23'-5;
+        console.log(c,d);//img3.jpg  ,  18
+
+        //逻辑运算符 与 隐式类型转换
+        /*
+            !一个代表取反
+            !!两个代表将取反后的布尔值再取反
+        */
+        var e=!23;
+        var f=!!34;
+        var g=!!{};
+        console.log(e,f,g);//false,true,true
+
+        //流程语句 与 隐式类型转换
+        var h={x:1};
+        if(h){
+            console.log("h:",h);//h:{x:1}
+        }
+
+        var h="";
+        if(h){
+            console.log("h:",h);//无输出
+        }
+    </script>
+</head>
+<body>
+    
+</body>
+</html>
